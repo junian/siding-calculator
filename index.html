@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Siding Material Calculator</title>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --secondary: #f8fafc;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --error: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: #f1f5f9;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .description {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        .calculator {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .calculator {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .input-section, .results-section {
+            padding: 20px;
+            background-color: var(--secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-group input {
+            flex: 1;
+        }
+
+        .unit {
+            display: inline-block;
+            width: 40px;
+            text-align: center;
+            line-height: 40px;
+            color: var(--text-light);
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .openings-container {
+            margin-top: 15px;
+            border-top: 1px solid var(--border);
+            padding-top: 15px;
+        }
+
+        .opening {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .remove-opening {
+            background-color: var(--error);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .remove-opening:hover {
+            background-color: #dc2626;
+        }
+
+        .add-opening {
+            background-color: var(--success);
+            margin-top: 5px;
+        }
+
+        .add-opening:hover {
+            background-color: #059669;
+        }
+
+        .results-section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-weight: 600;
+        }
+
+        .result-value {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .total-result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .total-label {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .total-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .siding-info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .siding-info h3 {
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .error {
+            color: var(--error);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Siding Material Calculator</h1>
+            <p class="description">Calculate how much siding material you need for your project</p>
+        </header>
+
+        <main>
+            <div class="calculator">
+                <div class="input-section">
+                    <h2>Project Dimensions</h2>
+                    <form id="calculator-form">
+                        <div class="form-group">
+                            <label for="siding-type">Siding Type</label>
+                            <select id="siding-type" required>
+                                <option value="">Select siding type</option>
+                                <option value="vinyl">Vinyl Siding</option>
+                                <option value="fiber-cement">Fiber Cement Siding</option>
+                                <option value="wood">Wood Siding</option>
+                                <option value="metal">Metal Siding</option>
+                                <option value="stucco">Stucco</option>
+                                <option value="brick">Brick Veneer</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="waste-factor">Waste Factor (%)</label>
+                            <input type="number" id="waste-factor" min="0" max="30" value="10" required>
+                            <p class="description">Recommended: 10-15% for standard projects</p>
+                        </div>
+
+                        <h3>Wall Dimensions</h3>
+                        <div id="walls-container">
+                            <div class="wall">
+                                <div class="form-group">
+                                    <label>Wall 1 Dimensions</label>
+                                    <div class="input-group">
+                                        <input type="number" class="wall-width" min="0" step="0.01" placeholder="Width" required>
+                                        <span class="unit">ft</span>
+                                        <input type="number" class="wall-height" min="0" step="0.01" placeholder="Height" required>
+                                        <span class="unit">ft</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="wall">
+                                <div class="form-group">
+                                    <label>Wall 2 Dimensions</label>
+                                    <div class="input-group">
+                                        <input type="number" class="wall-width" min="0" step="0.01" placeholder="Width" required>
+                                        <span class="unit">ft</span>
+                                        <input type="number" class="wall-height" min="0" step="0.01" placeholder="Height" required>
+                                        <span class="unit">ft</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="button" id="add-wall" class="add-opening">+ Add Another Wall</button>
+
+                        <div class="openings-container">
+                            <h3>Windows and Doors</h3>
+                            <p class="description">Add windows, doors, and other openings to subtract from the total area</p>
+                            
+                            <div id="openings-container">
+                                <!-- Openings will be added here -->
+                            </div>
+                            
+                            <button type="button" id="add-opening" class="add-opening">+ Add Window/Door</button>
+                        </div>
+
+                        <button type="submit" id="calculate-btn">Calculate Materials</button>
+                    </form>
+                </div>
+
+                <div class="results-section" id="results">
+                    <h2>Calculation Results</h2>
+                    <div class="result-item">
+                        <span class="result-label">Total Wall Area:</span>
+                        <span class="result-value" id="total-area">0 sq ft</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Openings Area:</span>
+                        <span class="result-value" id="openings-area">0 sq ft</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Net Area:</span>
+                        <span class="result-value" id="net-area">0 sq ft</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Waste Factor:</span>
+                        <span class="result-value" id="waste">10%</span>
+                    </div>
+
+                    <div class="total-result">
+                        <div class="total-label">Total Siding Needed</div>
+                        <div class="total-value" id="total-siding">0 sq ft</div>
+                    </div>
+
+                    <div class="siding-info" id="siding-info">
+                        <h3>Material Information</h3>
+                        <p>Select a siding type to see specific material requirements.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>This calculator provides an estimate. Always consult with a professional for final measurements.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM elements
+            const form = document.getElementById('calculator-form');
+            const addWallBtn = document.getElementById('add-wall');
+            const addOpeningBtn = document.getElementById('add-opening');
+            const wallsContainer = document.getElementById('walls-container');
+            const openingsContainer = document.getElementById('openings-container');
+            const sidingTypeSelect = document.getElementById('siding-type');
+            const wasteFactor = document.getElementById('waste-factor');
+            
+            // Results elements
+            const totalAreaEl = document.getElementById('total-area');
+            const openingsAreaEl = document.getElementById('openings-area');
+            const netAreaEl = document.getElementById('net-area');
+            const wasteEl = document.getElementById('waste');
+            const totalSidingEl = document.getElementById('total-siding');
+            const sidingInfoEl = document.getElementById('siding-info');
+            
+            // Wall counter
+            let wallCount = 2;
+            
+            // Add a new wall
+            addWallBtn.addEventListener('click', function() {
+                wallCount++;
+                const wallDiv = document.createElement('div');
+                wallDiv.className = 'wall';
+                wallDiv.innerHTML = `
+                    <div class="form-group">
+                        <label>Wall ${wallCount} Dimensions</label>
+                        <div class="input-group">
+                            <input type="number" class="wall-width" min="0" step="0.01" placeholder="Width" required>
+                            <span class="unit">ft</span>
+                            <input type="number" class="wall-height" min="0" step="0.01" placeholder="Height" required>
+                            <span class="unit">ft</span>
+                        </div>
+                    </div>
+                `;
+                wallsContainer.appendChild(wallDiv);
+            });
+            
+            // Add a new opening (window/door)
+            addOpeningBtn.addEventListener('click', function() {
+                const openingDiv = document.createElement('div');
+                openingDiv.className = 'opening';
+                openingDiv.innerHTML = `
+                    <input type="number" class="opening-width" min="0" step="0.01" placeholder="Width (ft)" required>
+                    <input type="number" class="opening-height" min="0" step="0.01" placeholder="Height (ft)" required>
+                    <button type="button" class="remove-opening">×</button>
+                `;
+                openingsContainer.appendChild(openingDiv);
+                
+                // Add event listener to remove button
+                const removeBtn = openingDiv.querySelector('.remove-opening');
+                removeBtn.addEventListener('click', function() {
+                    openingsContainer.removeChild(openingDiv);
+                });
+            });
+            
+            // Calculate button click
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                calculateSiding();
+            });
+            
+            // Siding type change
+            sidingTypeSelect.addEventListener('change', function() {
+                updateSidingInfo();
+            });
+            
+            // Calculate siding materials
+            function calculateSiding() {
+                // Get all walls
+                const walls = document.querySelectorAll('.wall');
+                let totalWallArea = 0;
+                
+                // Calculate total wall area
+                walls.forEach(wall => {
+                    const width = parseFloat(wall.querySelector('.wall-width').value) || 0;
+                    const height = parseFloat(wall.querySelector('.wall-height').value) || 0;
+                    totalWallArea += width * height;
+                });
+                
+                // Get all openings
+                const openings = document.querySelectorAll('.opening');
+                let totalOpeningsArea = 0;
+                
+                // Calculate total openings area
+                openings.forEach(opening => {
+                    const width = parseFloat(opening.querySelector('.opening-width').value) || 0;
+                    const height = parseFloat(opening.querySelector('.opening-height').value) || 0;
+                    totalOpeningsArea += width * height;
+                });
+                
+                // Calculate net area
+                const netArea = Math.max(0, totalWallArea - totalOpeningsArea);
+                
+                // Get waste factor
+                const waste = parseFloat(wasteFactor.value) || 10;
+                
+                // Calculate total siding needed with waste factor
+                const totalSiding = netArea * (1 + waste / 100);
+                
+                // Update results
+                totalAreaEl.textContent = `${totalWallArea.toFixed(2)} sq ft`;
+                openingsAreaEl.textContent = `${totalOpeningsArea.toFixed(2)} sq ft`;
+                netAreaEl.textContent = `${netArea.toFixed(2)} sq ft`;
+                wasteEl.textContent = `${waste}%`;
+                totalSidingEl.textContent = `${totalSiding.toFixed(2)} sq ft`;
+                
+                // Update siding info
+                updateSidingInfo(totalSiding);
+            }
+            
+            // Update siding information based on type
+            function updateSidingInfo(totalSiding = 0) {
+                const sidingType = sidingTypeSelect.value;
+                let infoHTML = '';
+                
+                if (!sidingType) {
+                    infoHTML = '<h3>Material Information</h3><p>Select a siding type to see specific material requirements.</p>';
+                } else {
+                    switch(sidingType) {
+                        case 'vinyl':
+                            const vinylPanels = Math.ceil(totalSiding / 10); // Assuming standard panel covers 10 sq ft
+                            infoHTML = `
+                                <h3>Vinyl Siding Information</h3>
+                                <p>Standard vinyl siding panels cover approximately 10 sq ft each.</p>
+                                <p><strong>Estimated panels needed:</strong> ${vinylPanels}</p>
+                                <p><strong>Boxes needed:</strong> ${Math.ceil(vinylPanels / 24)} (24 panels per box)</p>
+                                <p>Don't forget to purchase J-channels, corner posts, starter strips, and trim pieces.</p>
+                            `;
+                            break;
+                        case 'fiber-cement':
+                            const fiberCementPanels = Math.ceil(totalSiding / 8.4); // 8.4 sq ft per panel (4'×2.5')
+                            infoHTML = `
+                                <h3>Fiber Cement Siding Information</h3>
+                                <p>Standard fiber cement panels cover approximately 8.4 sq ft each.</p>
+                                <p><strong>Estimated panels needed:</strong> ${fiberCementPanels}</p>
+                                <p>Remember to account for trim pieces, flashing, and special cutting tools.</p>
+                            `;
+                            break;
+                        case 'wood':
+                            const woodBoards = Math.ceil(totalSiding / 6.7); // 6.7 sq ft per board (8'×10")
+                            infoHTML = `
+                                <h3>Wood Siding Information</h3>
+                                <p>Standard 8' wood siding boards with 10" exposure cover approximately 6.7 sq ft each.</p>
+                                <p><strong>Estimated boards needed:</strong> ${woodBoards}</p>
+                                <p>Remember to purchase primer, paint, and fasteners suitable for wood siding.</p>
+                            `;
+                            break;
+                        case 'metal':
+                            const metalPanels = Math.ceil(totalSiding / 16); // 16 sq ft per panel
+                            infoHTML = `
+                                <h3>Metal Siding Information</h3>
+                                <p>Standard metal panels cover approximately 16 sq ft each.</p>
+                                <p><strong>Estimated panels needed:</strong> ${metalPanels}</p>
+                                <p>Don't forget trim pieces, fasteners, and flashing for proper installation.</p>
+                            `;
+                            break;
+                        case 'stucco':
+                            const stuccoBags = Math.ceil(totalSiding / 25); // 25 sq ft per 80lb bag at 3/8" thickness
+                            infoHTML = `
+                                <h3>Stucco Information</h3>
+                                <p>An 80lb bag of stucco mix covers approximately 25 sq ft at 3/8" thickness.</p>
+                                <p><strong>Estimated bags needed:</strong> ${stuccoBags}</p>
+                                <p>You'll also need metal lath, building paper, and corner beads for proper installation.</p>
+                            `;
+                            break;
+                        case 'brick':
+                            const bricks = Math.ceil(totalSiding * 7); // 7 bricks per sq ft
+                            const mortar = Math.ceil(totalSiding / 35); // 35 sq ft per 80lb bag
+                            infoHTML = `
+                                <h3>Brick Veneer Information</h3>
+                                <p>Standard bricks require approximately 7 bricks per square foot.</p>
+                                <p><strong>Estimated bricks needed:</strong> ${bricks}</p>
+                                <p><strong>Mortar bags needed:</strong> ${mortar} (80lb bags)</p>
+                                <p>Remember to purchase ties, flashing, and weep holes for proper installation.</p>
+                            `;
+                            break;
+                    }
+                }
+                
+                sidingInfoEl.innerHTML = infoHTML;
+            }
+            
+            // Add initial opening
+            addOpeningBtn.click();
+        });
+    </script>
+</body>
+</html>
